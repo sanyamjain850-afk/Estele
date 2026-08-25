@@ -13,12 +13,16 @@ return new class extends Migration
             $table->dropForeign(['product_id']);
         });
 
-        DB::statement('ALTER TABLE order_items MODIFY product_id VARCHAR(255)');
+        Schema::table('order_items', function (Blueprint $table) {
+            $table->string('product_id')->change();
+        });
     }
 
     public function down(): void
     {
-        DB::statement('ALTER TABLE order_items MODIFY product_id BIGINT UNSIGNED');
+        Schema::table('order_items', function (Blueprint $table) {
+            $table->unsignedBigInteger('product_id')->change();
+        });
 
         Schema::table('order_items', function (Blueprint $table) {
             $table->foreign('product_id')->references('id')->on('products');
