@@ -14,7 +14,7 @@ class ChatController extends Controller
             'message' => 'required|string',
         ]);
 
-        $apiKey = env('GEMINI_API_KEY');
+        $apiKey = config('services.gemini.key');
         
 
         $response = Http::withHeaders([
