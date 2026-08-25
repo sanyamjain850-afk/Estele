@@ -4,7 +4,7 @@ import BudgetStrip from "./BudgetStrip";
 import ProductCard from "./ProductCard";
 import TrustBadges from "./TrustBadges";
 import Testimonials from "./Testimonials";
-import AboutUs from "./Newsletter";
+import AboutUs from "./NewsLetter";
 import PromoBar from "./PromoBar";
 
 export default function Home({ newArrivals = [], bestsellers = [] }) {
