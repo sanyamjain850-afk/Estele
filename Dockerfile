@@ -13,14 +13,22 @@ FROM php:8.3-cli
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
     git \
+    curl \
     unzip \
+    pkg-config \
     libzip-dev \
     libpng-dev \
+    libjpeg-dev \
+    libfreetype6-dev \
     libonig-dev \
     libxml2-dev \
     libicu-dev \
+    libsodium-dev \
+    libcurl4-openssl-dev \
     mariadb-client \
-    && docker-php-ext-install pdo pdo_mysql mbstring exif pcntl bcmath gd zip \
+    && docker-php-ext-configure gd --with-jpeg --with-freetype \
+    && docker-php-ext-configure intl \
+    && docker-php-ext-install pdo pdo_mysql mysqli mbstring exif pcntl bcmath gd zip intl sodium curl opcache \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Composer
@@ -30,10 +38,13 @@ WORKDIR /var/www/html
 
 # Copy composer files first (better layer caching)
 COPY composer.json composer.lock ./
-RUN composer install --no-dev --no-scripts --no-autoloader --prefer-dist
+RUN composer install --no-dev --no-scripts --no-autoloader --prefer-dist --ignore-platform-req=ext-intl
 
 # Copy the rest of the application
 COPY . .
+
+# Ensure .env exists for build-time artisan commands (Railway env vars override at runtime)
+RUN if [ ! -f .env ]; then cp .env.example .env; fi
 
 # Copy built frontend assets from stage 1
 COPY --from=frontend /app/public/build ./public/build
